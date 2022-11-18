@@ -16,7 +16,7 @@ NOTE: before creating my DOCKERFILE, I had these files list: SOSOREAD.md, server
 
 after writing our Dockerfile, lets build the image and then to a container... and run it
 
-## BUILD THE IMAGE
+# BUILD THE IMAGE
 $ docker build .
 # It will build an image. copy the generated ID that it built.
 
@@ -27,3 +27,15 @@ $ docker run -p 4000:80 45777577adbgse
 $ docker ps -a 
 
 NOW: Go the the url and type : localhost:3000
+---
+UNDERSTANDING ATTACHED OR DETACHER MODE
+EX:
+$ docker run -p 4000:80 45777577adbgse     //attached mode
+$ docker run -p 4000:80 -d 45777577adbgse  //detached mode
+---
+SOME OTHER DOCKER COMMANDS
+$ docker attach [container-id]
+$ docker detach [container-id]
+$ docker start [container-id]
+$ docker stop [container-id]
+$ docker logs [container-id]
