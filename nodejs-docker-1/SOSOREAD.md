@@ -40,6 +40,20 @@ $ docker detach [container-id]
 $ docker start [container-id]
 $ docker stop [container-id]
 $ docker logs [container-id]
+$ docker start -a -i [container-id]   //interactive mode
+
+COPY FILES TO AN EXISTING RUNNING CONTAINER
+USE CASE: copy files to container without stopping container or rebuilding the image# you can add a file or folder in your working directore anc eopy to an existing docker container like so:
+$ docker cp collins.txt [container-id]    //copying a file
+$ docker cp kumba/collins.txt [container-id]    //copying a file and folder
+$ docker cp kumba/. [container-id]    //copying all the file in the kumba folder
+
+EXAMPLE:
+$ docker cp collins.txt first-container    //copying a file to container called first-container 
+
+$ docker cp collins.txt first-container:/test    //copying a file to container's new path called first-container:/test
+
+
 
 
 
