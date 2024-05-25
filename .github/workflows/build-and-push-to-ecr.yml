@@ -1,4 +1,7 @@
-name: Build and Push Docker Image to ECR
+#---------------------------------------------------------------------
+# GitHub Action Workflow to Deploy Flask App to AWS ElasticBeanstalk
+#---------------------------------------------------------------------
+name: CI/CD Pipeline
 
 on:
   push:
@@ -6,25 +9,52 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
 
-      - name: Log in to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          region: ${{ secrets.AWS_REGION }}
-          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Build and push Docker image
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install AWS CLI
+      run: |
+        pip install awscli --upgrade --user
+
+    - name: Configure AWS credentials
+      run: |
+        aws configure set aws_access_key_id ${{ secrets.MY_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.MY_SECRET_ACCESS_KEY }}
+        aws configure set region eu-north-1
+
+    - name: Deploy to AWS Elastic Beanstalk
+    #   run: |
+    #     aws elasticbeanstalk create-application-version --application-name git-ation-app --version-label v1 --source-bundle S3Bucket=sosotech-bucket,S3Key=arn:aws:s3:::sosotech-bucket
+    #     aws elasticbeanstalk update-environment --environment-name git-ation-app-env --version-label v1
+    # - name: Build and push Docker image
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
@@ -37,6 +67,3 @@ jobs:
 
           # Push the Docker image to ECR
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG
-
-      - name: Output image URI
-        run: echo "Docker image pushed to ECR: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}"
