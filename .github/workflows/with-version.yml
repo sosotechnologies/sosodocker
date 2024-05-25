@@ -37,6 +37,3 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-      - name: Output image URI
-        run: echo "Docker image pushed to ECR: ${{ steps.login-pf-aws-ecr.outputs.registry }}/${{ secrets.AWS_ECR_REPO }}:${{ env.VERSION }}"
