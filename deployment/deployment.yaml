@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nodejs-app
+  labels:
+    app: my-nodejs-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-nodejs-app
+  template:
+    metadata:
+      labels:
+        app: my-nodejs-app
+    spec:
+      containers:
+      - name: my-nodejs-app
+        image: 368085106192.dkr.ecr.us-east-1.amazonaws.com/sosotech:1.0.0 # Initial image, will be updated by the GitHub Actions workflow
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nodejs-app-service
+spec:
+  selector:
+    app: my-nodejs-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

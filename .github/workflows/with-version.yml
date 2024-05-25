@@ -37,3 +37,18 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Update Kubernetes Deployment
+        env:
+          ECR_REGISTRY: ${{ steps.login-pf-aws-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO }}
+          IMAGE_TAG: ${{ env.VERSION }}
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: |
+          kubectl set image deployment/deployment/my-nodejs-app my-nodejs-app=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          kubectl rollout status deployment/deployment/my-nodejs-app
