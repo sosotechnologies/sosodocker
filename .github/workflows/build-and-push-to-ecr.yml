@@ -51,9 +51,9 @@ jobs:
         aws configure set region eu-north-1
 
     - name: Build and push Docker image
-        env:
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
+      env:
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        IMAGE_TAG: ${{ github.sha }}
       run: |
         # Build the Docker image
         docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
