@@ -38,5 +38,5 @@ jobs:
           # Push the Docker image to ECR
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG
 
-      # - name: Output image URI
-      #   run: echo "Docker image pushed to ECR: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}"
+      - name: Output image URI
+        run: echo "Docker image pushed to ECR: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}"
