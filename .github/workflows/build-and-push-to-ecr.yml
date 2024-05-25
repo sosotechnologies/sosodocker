@@ -50,20 +50,16 @@ jobs:
         aws configure set aws_secret_access_key ${{ secrets.MY_SECRET_ACCESS_KEY }}
         aws configure set region eu-north-1
 
-    - name: Deploy to AWS Elastic Beanstalk
-    #   run: |
-    #     aws elasticbeanstalk create-application-version --application-name git-ation-app --version-label v1 --source-bundle S3Bucket=sosotech-bucket,S3Key=arn:aws:s3:::sosotech-bucket
-    #     aws elasticbeanstalk update-environment --environment-name git-ation-app-env --version-label v1
-    # - name: Build and push Docker image
+    - name: Build and push Docker image
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
-        run: |
-          # Build the Docker image
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+      run: |
+        # Build the Docker image
+        docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
 
-          # Tag the Docker image
-          docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG
+        # Tag the Docker image
+        docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG
 
-          # Push the Docker image to ECR
-          docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG
+        # Push the Docker image to ECR
+        docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG
