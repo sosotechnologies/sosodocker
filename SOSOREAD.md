@@ -59,3 +59,9 @@ $ docker cp collins.txt first-container:/test    //copying a file to container's
 
 
 
+
+
+## .gitlab ci
+Build and push Docker image: This step uses the extracted version number as the image tag when building and pushing the Docker image to Amazon ECR.
+
+Extract version from package.json: This step uses jq to parse the version number from package.json and set it as an environment variable (VERSION).  Here is the step on the pipeline: Extract version from package.json
