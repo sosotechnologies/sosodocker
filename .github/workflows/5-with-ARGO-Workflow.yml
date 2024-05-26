@@ -31,7 +31,7 @@ jobs:
           chmod +x ./bump-version.sh
           ./bump-version.sh
 
-      - name: Build and push image Amazon ECR
+      - name: Build and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-pf-aws-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO }}
@@ -39,23 +39,23 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          
-      - name: Setup kubectl
-        uses: azure/k8s-set-context@v2
-        with:
-          version: 'latest'
-          method: service-account
-          k8s-url: https://10.0.0.90:6443
-          k8s-secret: ${{ secrets.KUBECONFIG }}
-      
-      - name: Checkout source code
-        uses: actions/checkout@v3
 
-      - name: Deploy to the Kubernetes cluster
-        uses: azure/k8s-deploy@v1
-        with:
-          namespace: default
-          manifests: |
-            kubernetes/deployment.yaml
-          images: |
-            ${{ steps.login-pf-aws-ecr.outputs.registry }}/${{ secrets.AWS_ECR_REPO }}:${{ env.NEW_VERSION }}
+      - name: Trigger Argo Workflow
+        env:
+          ARGO_SERVER: ${{ secrets.ARGO_SERVER }}
+          ARGO_TOKEN: ${{ secrets.ARGO_TOKEN }}
+        run: |
+          curl -X POST -H "Authorization: Bearer $ARGO_TOKEN" -H "Content-Type: application/json" \
+          -d '{
+                "namespace": "argo",
+                "resourceKind": "Workflow",
+                "resourceName": "deploy-app",
+                "name": "deploy-app",
+                "parameters": [
+                  {
+                    "name": "image-tag",
+                    "value": "'${{ env.IMAGE_TAG }}'"
+                  }
+                ]
+              }' \
+          $ARGO_SERVER/api/v1/workflows/argo/submit
