@@ -41,13 +41,16 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           
       - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
+        uses: azure/k8s-set-context@v2
         with:
           version: 'latest'
           method: service-account
           k8s-url: https://10.0.0.90:6443
           k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
       
+      - name: Checkout source code
+        uses: actions/checkout@v3
+        
       - name: Deploy to the Kubernetes cluster
         uses: azure/k8s-deploy@v1
         with:
