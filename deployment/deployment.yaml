@@ -19,6 +19,8 @@ spec:
         image: 368085106192.dkr.ecr.us-east-1.amazonaws.com/sosotech:1.0.0 # Initial image, will be updated by the GitHub Actions workflow
         ports:
         - containerPort: 80
+      imagePullSecrets:
+        - name: github-container-registry
 ---
 apiVersion: v1
 kind: Service
