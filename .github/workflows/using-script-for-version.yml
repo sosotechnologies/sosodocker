@@ -31,7 +31,7 @@ jobs:
           chmod +x ./bump-version.sh
           ./bump-version.sh
 
-      - name: Build and push the tagged docker image to Amazon ECR
+      - name: Build and push image Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-pf-aws-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO }}
