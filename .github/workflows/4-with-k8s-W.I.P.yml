@@ -44,12 +44,9 @@ jobs:
         uses: azure/setup-kubectl@v3
         with:
           version: 'latest'
-
-      - name: Configure kubeconfig
-        run: |
-          echo ${{ secrets.KUBECONFIG_BASE64 }} | base64 --decode > $HOME/.kube/config
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG_BASE64 }}
+          method: service-account
+          k8s-url: https://10.0.0.90:6443
+          k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
 
       - name: Update Kubernetes Deployment
         env:
@@ -57,5 +54,5 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO }}
           IMAGE_TAG: ${{ env.NEW_VERSION }}
         run: |
-          kubectl set image deployment/my-nodejs-app my-nodejs-app=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          kubectl rollout status deployment/my-nodejs-app
+          kubectl set image deployment/deployment/my-nodejs-app my-nodejs-app=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          kubectl rollout status deployment/deployment/my-nodejs-app

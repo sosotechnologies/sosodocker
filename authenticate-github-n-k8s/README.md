@@ -3,7 +3,7 @@ k create ns github
 kubectl -n github create secret docker-registry github-container-registry \
     --docker-server=ghcr.io \
     --docker-username=sosotechnologies \
-    --docker-password=xxxxxxx$$ \
+    --docker-password=pat_vvvvvvvvvvvvvvvvvv \
     --dry-run=client -o yaml > github-secret.yaml
 
 kubectl create secret generic aws-ecr-secret \
