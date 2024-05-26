@@ -1,36 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-nodejs-app
-  labels:
-    app: my-nodejs-app
+  name: your-deployment-name
+  namespace: default
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: my-nodejs-app
+      app: your-app-name
   template:
     metadata:
       labels:
-        app: my-nodejs-app
+        app: your-app-name
     spec:
       containers:
-      - name: my-nodejs-app
-        image: 368085106192.dkr.ecr.us-east-1.amazonaws.com/sosotech:1.0.0 # Initial image, will be updated by the GitHub Actions workflow
+      - name: your-container-name
+        image: 368085106192.dkr.ecr.us-east-1.amazonaws.com/sosotech:1.0.0 # This will be updated by the GitHub Actions pipeline
         ports:
         - containerPort: 80
       imagePullSecrets:
         - name: aws-ecr-secret
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-nodejs-app-service
-spec:
-  selector:
-    app: my-nodejs-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: LoadBalancer
