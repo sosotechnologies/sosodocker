@@ -47,12 +47,12 @@ jobs:
           method: service-account
           k8s-url: https://10.0.0.90:6443
           k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
-
-      - name: Update Kubernetes Deployment
-        env:
-          ECR_REGISTRY: ${{ steps.login-pf-aws-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO }}
-          IMAGE_TAG: ${{ env.NEW_VERSION }}
-        run: |
-          kubectl set image deployment/my-nodejs-app my-nodejs-app=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          kubectl rollout status deployment/my-nodejs-app
+      
+      - name: Deploy to the Kubernetes cluster
+        uses: azure/k8s-deploy@v1
+        with:
+          namespace: default
+          manifests: |
+            kubernetes/deployment.yaml
+          images: |
+            ${{ steps.login-pf-aws-ecr.outputs.registry }}/${{ secrets.AWS_ECR_REPO }}:${{ env.NEW_VERSION }}

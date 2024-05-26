@@ -20,7 +20,7 @@ spec:
         ports:
         - containerPort: 80
       imagePullSecrets:
-        - name: github-container-registry
+        - name: aws-ecr-secret
 ---
 apiVersion: v1
 kind: Service
