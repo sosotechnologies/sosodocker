@@ -46,11 +46,11 @@ jobs:
           version: 'latest'
           method: service-account
           k8s-url: https://10.0.0.90:6443
-          k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
+          k8s-secret: ${{ secrets.KUBECONFIG }}
       
       - name: Checkout source code
         uses: actions/checkout@v3
-        
+
       - name: Deploy to the Kubernetes cluster
         uses: azure/k8s-deploy@v1
         with:
