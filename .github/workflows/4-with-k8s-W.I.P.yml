@@ -54,5 +54,5 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO }}
           IMAGE_TAG: ${{ env.NEW_VERSION }}
         run: |
-          kubectl set image deployment/deployment/my-nodejs-app my-nodejs-app=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          kubectl rollout status deployment/deployment/my-nodejs-app
+          kubectl set image deployment/my-nodejs-app my-nodejs-app=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          kubectl rollout status deployment/my-nodejs-app
