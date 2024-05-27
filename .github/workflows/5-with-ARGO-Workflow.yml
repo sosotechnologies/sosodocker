@@ -42,7 +42,8 @@ jobs:
 
       - name: Send Webhook to Argo Events
         run: |
-          curl -X POST \
-            -d '{"image_tag":"'"${{ env.NEW_VERSION }}"'"}' \
-            -H "Content-Type: application/json" \
-            https://argoevents.sosotechnologies.com/push
+
+         curl -k 'https://10.0.0.87:2746/api/v1/events/argo-events/-' \
+            -H 'Content-Type: application/json' \
+            -H 'Authorization: Bearer {ARGO_TOKEN}' \
+            -d '{"image_tag":"'"${{ env.NEW_VERSION }}"'"}'
