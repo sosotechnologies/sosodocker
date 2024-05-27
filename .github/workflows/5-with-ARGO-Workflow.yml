@@ -45,4 +45,4 @@ jobs:
           curl -X POST \
             -d '{"image_tag":"'"${{ env.NEW_VERSION }}"'"}' \
             -H "Content-Type: application/json" \
-            https://argoevents.sosotechnologies.com/ecr-push
+            https://argoevents.sosotechnologies.com:12000/ecr-push
