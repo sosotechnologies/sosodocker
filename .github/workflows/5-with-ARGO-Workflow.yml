@@ -45,10 +45,7 @@ jobs:
           curl -X POST \
             -d '{"image_tag":"'"${{ env.NEW_VERSION }}"'"}' \
             -H "Content-Type: application/json" \
-            http://10.0.0.89:12000/ecr-push
-
-                      #           imagePullSecrets:
-                      # - name: ecr-registry-secret
+            https://argoevents.sosotechnologies.com/ecr-push
 
 
 
