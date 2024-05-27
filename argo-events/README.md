@@ -28,3 +28,4 @@ curl -X POST \
   http://10.0.0.89:12000/ecr-push
 ```
 
+kubectl config view --minify -o 'jsonpath={.clusters[0].cluster.server}'
