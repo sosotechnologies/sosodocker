@@ -18,7 +18,7 @@ spec:
         - -c
         - |
           kubectl get nodes
-      #     kubectl set image deployment/your-deployment-name your-container-name=${IMAGE_TAG}
-      # env:
-      # - name: IMAGE_TAG
-      #   value: "{{workflow.parameters.image-tag}}"
+          kubectl set image deployment/your-deployment-name your-container-name=${IMAGE_TAG}
+      env:
+      - name: IMAGE_TAG
+        value: "{{workflow.parameters.image-tag}}"

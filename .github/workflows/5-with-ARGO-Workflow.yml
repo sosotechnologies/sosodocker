@@ -40,22 +40,9 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Trigger Argo Workflow
-        env:
-          ARGO_SERVER: ${{ secrets.ARGO_SERVER }}
-          ARGO_TOKEN: ${{ secrets.ARGO_TOKEN }}
+      - name: Send Webhook to Argo Events
         run: |
-          curl -X POST -H "Authorization: Bearer $ARGO_TOKEN" -H "Content-Type: application/json" \
-          -d '{
-                "namespace": "argo",
-                "resourceKind": "Workflow",
-                "resourceName": "deploy-app",
-                "name": "deploy-app",
-                "parameters": [
-                  {
-                    "name": "image-tag",
-                    "value": "'${{ env.IMAGE_TAG }}'"
-                  }
-                ]
-              }' \
-          $ARGO_SERVER/api/v1/workflows/argo/submit
+          curl -X POST \
+            -d '{"image_tag":"'"${{ env.NEW_VERSION }}"'"}' \
+            -H "Content-Type: application/json" \
+            http://10.0.0.89:12000/ecr-push

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: your-deployment-name
+  name: nodejs-sosotech
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: your-app-name
+      app: nodejs-sosotech
   template:
     metadata:
       labels:
-        app: your-app-name
+        app: nodejs-sosotech
     spec:
       containers:
-      - name: your-container-name
-        image: 368085106192.dkr.ecr.us-east-1.amazonaws.com/sosotech:1.0.0 # This will be updated by the GitHub Actions pipeline
+      - name: nodejs-sosotech
+        image: 368085106192.dkr.ecr.us-east-1.amazonaws.com/sosotech:v0.0.13 
         ports:
         - containerPort: 80
       imagePullSecrets:
-        - name: aws-ecr-secret
+        - name: ecr-registry-secret
