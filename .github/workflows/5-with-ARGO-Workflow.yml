@@ -43,6 +43,6 @@ jobs:
       - name: Send Webhook to Argo Events
         run: |
           curl -X POST \
-            -d '{"image_tag":"'"${{ env.NEW_VERSION }}"'"}' \
+            -d '{"image_tag":"v1.0.0"}' \
             -H "Content-Type: application/json" \
-            https://argoevents.sosotechnologies.com:12000/ecr-push
+            http://10.0.0.89:12000/ecr-push
