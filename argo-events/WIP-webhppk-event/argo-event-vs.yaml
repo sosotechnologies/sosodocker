@@ -1,0 +1,43 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  labels:
+  name: ecr-webhook-virtualservice
+  namespace: argo-events
+spec:
+  gateways:
+  - istio-system/general-gateway
+  hosts:
+  - 'argoevents.sosotechnologies.com'
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 2s
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: github-eventsource-svc
+        port:
+          number: 12000
+
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: ecr-webhook-virtualservice
+#   namespace: argo-events
+# spec:
+#   hosts:
+#   - "your-public-url"
+#   gateways:
+#   - ecr-webhook-gateway
+#   http:
+#   - match:
+#     - uri:
+#         exact: /ecr-push
+#     route:
+#     - destination:
+#         host: ecr-webhook-eventsource-svc.argo-events.svc.cluster.local
+#         port:
+#           number: 12000

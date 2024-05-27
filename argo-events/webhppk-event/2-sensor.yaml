@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: ecr-webhook-sensor
+spec:
+  template:
+    serviceAccountName: operate-workflow-sa
+  dependencies:
+    - name: ecr-push-dep
+      eventSourceName: ecr-webhook
+      eventName: ecr-push
+  triggers:
+    - template:
+        name: update-deployment-trigger
+        k8s:
+          operation: update
+          source:
+            resource:
+              apiVersion: apps/v1
+              kind: Deployment
+              name: soso-nodejs
+              namespace: detault
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: soso-nodejs
+                        image: 368085106192.dkr.ecr.us-east-1.amazonaws.com/sosotech:{{inputs.parameters.image_tag}}
+                    imagePullSecrets:
+                      - name: ecr-registry-secret
+          parameters:
+            - src:
+                dependencyName: ecr-push-dep
+                dataKey: body.image_tag
+              dest: spec.template.spec.containers.0.image
