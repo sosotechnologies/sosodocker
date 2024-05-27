@@ -46,6 +46,3 @@ jobs:
             -d '{"image_tag":"'"${{ env.NEW_VERSION }}"'"}' \
             -H "Content-Type: application/json" \
             https://argoevents.sosotechnologies.com/ecr-push
-
-
-            
