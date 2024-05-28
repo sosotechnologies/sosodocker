@@ -40,10 +40,52 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Send Webhook to Argo Events
+      - name: Install Argo CLI
         run: |
+          curl -sLO https://github.com/argoproj/argo-workflows/releases/download/v3.3.8/argo-linux-amd64.gz
+          gunzip argo-linux-amd64.gz
+          chmod +x argo-linux-amd64
+          sudo mv ./argo-linux-amd64 /usr/local/bin/argo
 
-         curl -k 'https://10.0.0.87:2746/api/v1/events/argo-events/-' \
-            -H 'Content-Type: application/json' \
-            -H 'Authorization: Bearer {ARGO_TOKEN}' \
-            -d '{"image_tag":"'"${{ env.NEW_VERSION }}"'"}'
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
+
+      - name: Add Argo Server Certificate to Trusted Certificates
+        run: |
+          sudo mkdir -p /usr/local/share/ca-certificates/extra
+          echo "${{ secrets.ARGO_SERVER_CERT }}" | base64 --decode > argo-server.crt
+          sudo cp argo-server.crt /usr/local/share/ca-certificates/extra/argo-server.crt
+          sudo update-ca-certificates
+
+      - name: Create Workflow YAML
+        run: |
+          cat <<EOF > nodejs-ecr-workflow.yaml
+          apiVersion: argoproj.io/v1alpha1
+          kind: Workflow
+          metadata:
+            name: nodejs-ecr
+            annotations:
+              workflows.argoproj.io/description: |
+                Pulling image from Aws-Ecr
+          spec:
+            serviceAccountName: argo  # Ensure this matches the service account configured above
+            entrypoint: main
+            imagePullSecrets:
+            - name: ecr-registry-secret-argo
+            templates:
+            - name: main
+              container:
+                image: ${{ steps.login-pf-aws-ecr.outputs.registry }}/${{ secrets.AWS_ECR_REPO }}:${{ env.NEW_VERSION }}
+                command: ["/bin/sh"]
+                args: ["-c", "echo Hello, Argo!"]
+                ports:
+                  - containerPort: 80
+          EOF
+
+      - name: Submit Workflow to Argo
+        env:
+          ARGO_SERVER: ${{ secrets.ARGO_SERVER }}
+          ARGO_TOKEN: ${{ secrets.ARGO_TOKEN }}
+        run: |
+          argo submit --server $ARGO_SERVER --token $ARGO_TOKEN --insecure nodejs-ecr-workflow.yaml
